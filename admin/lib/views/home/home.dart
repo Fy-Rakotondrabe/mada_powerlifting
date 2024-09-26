@@ -59,7 +59,7 @@ class Home extends StatelessWidget {
                       Colors.white,
                     ),
                   ),
-                  child: const Text('Launch Meet'),
+                  child: const Text('Start Meet'),
                 ),
               ],
             ),
