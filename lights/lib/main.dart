@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lights/search_server.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +57,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    searchForServer();
+  }
 
   void _incrementCounter() {
     setState(() {

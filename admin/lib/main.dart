@@ -1,16 +1,21 @@
+import 'dart:developer';
+
+import 'package:admin/api/handler.dart';
 import 'package:admin/providers/screen.dart';
+import 'package:admin/providers/server.dart';
 import 'package:admin/router.dart';
 import 'package:admin/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
+import 'dart:io';
+import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf_io.dart' as shelf_io;
+import 'package:shelf_web_socket/shelf_web_socket.dart';
 
 void main() async {
-  // Ensure the necessary bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize window manager
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = const WindowOptions(
@@ -28,7 +33,34 @@ void main() async {
     await windowManager.focus();
   });
 
-  runApp(const ProviderScope(child: Admin()));
+  final container = ProviderContainer();
+  final serverHandler = ServerHandler(container);
+
+  // Start the server
+  final server = await shelf_io.serve(
+    serverHandler.handler,
+    InternetAddress.anyIPv4,
+    8080,
+  );
+
+  // Get the host IP address
+  final interfaces = await NetworkInterface.list(
+    type: InternetAddressType.IPv4,
+  );
+  final hostAddress = interfaces.first.addresses.first.address;
+  final serverUrl = '$hostAddress:${server.port}';
+
+  log(serverUrl);
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        serverUrlProvider.overrideWith((ref) => serverUrl),
+      ],
+      parent: container,
+      child: const Admin(),
+    ),
+  );
 }
 
 class Admin extends ConsumerStatefulWidget {
@@ -72,7 +104,7 @@ class _AdminState extends ConsumerState<Admin> {
       autofocus: true,
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Admin',
         theme: themeData,
         routerConfig: router,
       ),
