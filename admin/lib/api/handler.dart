@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ServerHandler {
   final ProviderContainer container;
+  final Map<WebSocketChannel, Judge> connectedJudges = {};
 
   ServerHandler(this.container);
 
@@ -40,9 +41,9 @@ class ServerHandler {
         if (container.read(meetProvider).judges.length < 3) {
           final requestBody = await request.readAsString();
           final payload = jsonDecode(requestBody) as Map<String, dynamic>;
-          container
-              .read(meetProvider.notifier)
-              .addJudge(Judge.fromJson(payload));
+          final judge = Judge.fromJson(payload);
+          container.read(meetProvider.notifier).addJudge(judge);
+          _broadcastStateUpdate();
           return shelf.Response.ok(
             jsonEncode({'message': 'Judge added'}),
             headers: {'Content-Type': 'application/json'},
@@ -68,6 +69,10 @@ class ServerHandler {
       (message) {
         final data = jsonDecode(message);
         switch (data['type']) {
+          case 'identify':
+            final judgeId = data['judgeId'];
+            connectedJudges[webSocket] = judgeId;
+            break;
           case 'postLight':
             final light = Light.fromJson(data['light']);
             container.read(meetProvider.notifier).addLight(light);
@@ -75,6 +80,7 @@ class ServerHandler {
           case 'removeJudge':
             final judge = Judge.fromJson(data['judge']);
             container.read(meetProvider.notifier).removeJudge(judge);
+            connectedJudges.remove(webSocket);
             break;
           case 'resetLight':
             _sendStateUpdate(webSocket);
@@ -83,6 +89,21 @@ class ServerHandler {
             webSocket.sink.add(jsonEncode({'error': 'Unknown message type'}));
         }
         // Broadcast updated state to all clients
+        _broadcastStateUpdate();
+      },
+      onDone: () {
+        // Handle WebSocket disconnection
+        if (connectedJudges.containsKey(webSocket)) {
+          final judge = connectedJudges[webSocket]!;
+          container.read(meetProvider.notifier).removeJudge(judge);
+          connectedJudges.remove(webSocket);
+          print('Judge disconnected: ${judge.name}');
+          _broadcastStateUpdate();
+        }
+      },
+      onError: (error) {
+        print('WebSocket error: $error');
+        // Handle any cleanup if needed
       },
     );
   }
@@ -93,5 +114,11 @@ class ServerHandler {
       'type': 'state',
       'light': lights.map((light) => light.toJson()).toList(),
     }));
+  }
+
+  void _broadcastStateUpdate() {
+    for (var webSocket in connectedJudges.keys) {
+      _sendStateUpdate(webSocket);
+    }
   }
 }
