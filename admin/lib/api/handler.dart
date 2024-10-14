@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:admin/models/judge.dart';
 import 'package:admin/models/light.dart';
@@ -10,9 +11,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ServerHandler {
   final ProviderContainer container;
-  final Map<WebSocketChannel, Judge> connectedJudges = {};
+  final Map<WebSocketChannel, String> connectedJudges = {};
 
-  ServerHandler(this.container);
+  ServerHandler(this.container) {
+    // Existing listener code remains the same
+    container.listen<MeetState>(
+      meetProvider,
+      (old, next) {
+        if (next.judges.length < (old?.judges.length ?? 0)) {
+          final removedJudge = old?.judges
+              .where((judge) => !next.judges.contains(judge))
+              .firstOrNull;
+          if (removedJudge != null) {
+            removeJudgeAndDisconnect(removedJudge);
+          }
+        }
+      },
+    );
+  }
 
   shelf.Handler get handler {
     final cascade = shelf.Cascade()
@@ -55,10 +71,28 @@ class ServerHandler {
           );
         }
       } catch (e) {
+        log(e.toString());
         return shelf.Response.internalServerError();
       }
     }
     return shelf.Response.notFound('Not Found');
+  }
+
+  void removeJudgeAndDisconnect(Judge judge) {
+    final entry = connectedJudges.entries
+        .where((entry) => entry.value == judge.id)
+        .firstOrNull;
+
+    log(entry.toString());
+
+    if (entry != null) {
+      final webSocket = entry.key;
+      connectedJudges.remove(webSocket);
+      webSocket.sink.add(jsonEncode({'type': 'disconnected'}));
+      webSocket.sink.close();
+      log('Judge disconnected: ${judge.role}');
+      _broadcastStateUpdate();
+    }
   }
 
   void _handleWebSocket(WebSocketChannel webSocket) {
@@ -71,6 +105,7 @@ class ServerHandler {
         switch (data['type']) {
           case 'identify':
             final judgeId = data['judgeId'];
+            log('Judge connected: $judgeId');
             connectedJudges[webSocket] = judgeId;
             break;
           case 'postLight':
@@ -78,7 +113,7 @@ class ServerHandler {
             container.read(meetProvider.notifier).addLight(light);
             break;
           case 'removeJudge':
-            final judge = Judge.fromJson(data['judge']);
+            final judge = data['judgeId'];
             container.read(meetProvider.notifier).removeJudge(judge);
             connectedJudges.remove(webSocket);
             break;
@@ -97,12 +132,12 @@ class ServerHandler {
           final judge = connectedJudges[webSocket]!;
           container.read(meetProvider.notifier).removeJudge(judge);
           connectedJudges.remove(webSocket);
-          print('Judge disconnected: ${judge.name}');
+          log('Judge disconnected');
           _broadcastStateUpdate();
         }
       },
       onError: (error) {
-        print('WebSocket error: $error');
+        log('WebSocket error: $error');
         // Handle any cleanup if needed
       },
     );

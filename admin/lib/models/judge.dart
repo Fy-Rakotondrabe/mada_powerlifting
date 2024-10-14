@@ -16,6 +16,7 @@ class Judge {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'role': role,
     };
   }

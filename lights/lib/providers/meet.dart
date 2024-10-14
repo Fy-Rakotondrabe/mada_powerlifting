@@ -54,8 +54,8 @@ class MeetNotifier extends StateNotifier<MeetState> {
     state = state.copyWith(waiting: loading);
   }
 
-  void setJudge(String role) {
-    state = state.copyWith(judge: Judge(role: role, id: uuid.v4()));
+  void setJudge(Judge judge) {
+    state = state.copyWith(judge: judge);
   }
 
   void setCurrentMeet(Meet meet) {

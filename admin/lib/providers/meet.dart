@@ -25,18 +25,19 @@ class MeetState {
 
   MeetState copyWith({
     String? name,
-    String? password,
     bool? enableOtherLightColors,
     Meet? currentMeet,
     bool? loading,
     List<Light>? lights,
     List<Judge>? judges,
+    bool? resetCurrentMeet,
   }) {
     return MeetState(
       name: name ?? this.name,
       enableOtherLightColors:
           enableOtherLightColors ?? this.enableOtherLightColors,
-      currentMeet: currentMeet ?? this.currentMeet,
+      currentMeet:
+          resetCurrentMeet == true ? null : (currentMeet ?? this.currentMeet),
       loading: loading ?? this.loading,
       lights: lights ?? this.lights,
       judges: judges ?? this.judges,
@@ -87,7 +88,7 @@ class MeetNotifier extends StateNotifier<MeetState> {
     Meet meet = state.currentMeet!;
     meet = meet.copyWith(exitDateTime: DateTime.now());
     await _dbHelper.updateMeet(meet);
-    state = state.copyWith(currentMeet: null);
+    state = state.copyWith(currentMeet: null, resetCurrentMeet: true);
   }
 
   void setName(String name) {
@@ -103,12 +104,14 @@ class MeetNotifier extends StateNotifier<MeetState> {
   }
 
   void addJudge(Judge judge) {
-    state = state.copyWith(judges: [...state.judges, judge]);
+    if (state.currentMeet != null) {
+      state = state.copyWith(judges: [...state.judges, judge]);
+    }
   }
 
-  void removeJudge(Judge judge) {
+  void removeJudge(String id) {
     state = state.copyWith(
-      judges: state.judges.where((j) => j.id != judge.id).toList(),
+      judges: state.judges.where((j) => j.id != id).toList(),
     );
   }
 

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lights/providers/meet.dart';
 
-class LightScreen extends StatelessWidget {
+class LightScreen extends ConsumerWidget {
   const LightScreen({super.key});
 
-  final bool enableOtherLight = false;
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Randori'),
+        title: Text(ref.watch(meetProvider).currentMeet?.name ?? ''),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final double containerHeight = constraints.maxHeight / 2;
           return Column(
             children: [
-              !enableOtherLight
+              ref.watch(meetProvider).currentMeet?.enableOtherLightColors ==
+                      false
                   ? Column(
                       children: [
                         _buildContainer(
@@ -46,7 +47,8 @@ class LightScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-              enableOtherLight
+              ref.watch(meetProvider).currentMeet?.enableOtherLightColors ==
+                      true
                   ? Row(
                       children: [
                         _buildContainer(

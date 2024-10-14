@@ -44,7 +44,16 @@ class Lights extends ConsumerWidget {
                         const SizedBox(
                           height: defaultSpacing,
                         ),
-                        const JudgeNotif(title: 'Head Judge Joined'),
+                        ...(ref.watch(meetProvider).judges.map((judge) {
+                          return JudgeNotif(
+                            title: judge.role,
+                            onRemove: () {
+                              ref
+                                  .read(meetProvider.notifier)
+                                  .removeJudge(judge.id);
+                            },
+                          );
+                        }).toList()),
                         const Spacer(),
                         ElevatedButton(
                           onPressed: () {

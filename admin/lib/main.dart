@@ -25,7 +25,7 @@ void main() async {
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
     titleBarStyle: TitleBarStyle.normal,
-    alwaysOnTop: true,
+    // alwaysOnTop: true,
   );
 
   windowManager.waitUntilReadyToShow(windowOptions, () async {
