@@ -26,6 +26,10 @@ class ServerHandler {
             removeJudgeAndDisconnect(removedJudge);
           }
         }
+
+        if (next.lights.isEmpty) {
+          resetLight();
+        }
       },
     );
   }
@@ -83,15 +87,19 @@ class ServerHandler {
         .where((entry) => entry.value == judge.id)
         .firstOrNull;
 
-    log(entry.toString());
-
     if (entry != null) {
       final webSocket = entry.key;
       connectedJudges.remove(webSocket);
       webSocket.sink.add(jsonEncode({'type': 'disconnected'}));
       webSocket.sink.close();
-      log('Judge disconnected: ${judge.role}');
       _broadcastStateUpdate();
+    }
+  }
+
+  void resetLight() {
+    for (var entry in connectedJudges.entries) {
+      final webSocket = entry.key;
+      webSocket.sink.add(jsonEncode({'type': 'resetLight'}));
     }
   }
 
@@ -109,16 +117,16 @@ class ServerHandler {
             connectedJudges[webSocket] = judgeId;
             break;
           case 'postLight':
-            final light = Light.fromJson(data['light']);
-            container.read(meetProvider.notifier).addLight(light);
+            final lights = container.read(meetProvider).lights;
+            if (lights.length < 3) {
+              final light = Light.fromJson(data['light']);
+              container.read(meetProvider.notifier).addLight(light);
+            }
             break;
           case 'removeJudge':
             final judge = data['judgeId'];
             container.read(meetProvider.notifier).removeJudge(judge);
             connectedJudges.remove(webSocket);
-            break;
-          case 'resetLight':
-            _sendStateUpdate(webSocket);
             break;
           default:
             webSocket.sink.add(jsonEncode({'error': 'Unknown message type'}));

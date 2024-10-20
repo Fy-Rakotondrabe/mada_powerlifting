@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:admin/utils/const.dart';
 import 'package:admin/utils/spacing.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +14,11 @@ class LightItem extends StatelessWidget {
 
   final bool isReady;
   final bool? isGoodLift;
-  final String? variation;
+  final int? variation;
 
   @override
   Widget build(BuildContext context) {
+    log(variation.toString());
     return Column(
       children: [
         Container(
@@ -48,11 +51,11 @@ class LightItem extends StatelessWidget {
           width: 60,
           height: 40,
           decoration: BoxDecoration(
-            color: variation == blue
-                ? Colors.blue
-                : variation == yellow
-                    ? Colors.yellow
-                    : Colors.grey[900],
+            color: variation == null ||
+                    variation == whiteValue ||
+                    variation == redValue
+                ? Colors.grey[900]
+                : Color(variation!),
           ),
         ),
       ],

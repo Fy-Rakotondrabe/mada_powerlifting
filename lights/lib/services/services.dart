@@ -112,6 +112,7 @@ class ServerConnection {
   }
 
   void postLight(Light light) {
+    log(light.toString());
     _channel.sink.add(jsonEncode({
       'type': 'postLight',
       'light': light.toJson(),

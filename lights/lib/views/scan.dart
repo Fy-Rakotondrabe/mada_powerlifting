@@ -70,10 +70,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
         final String? scannedValue = capture.barcodes.first.rawValue;
         debugPrint("Barcode scanned: $scannedValue");
 
-        ref.read(serverProvider.notifier).init(
-              'http://192.168.8.101:8080',
-              context,
-            );
+        ref.read(serverProvider.notifier).init('http://192.168.8.100:8080');
 
         showModalBottomSheet(
           context: context,

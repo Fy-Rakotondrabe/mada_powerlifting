@@ -1,3 +1,4 @@
+import 'package:admin/models/light.dart';
 import 'package:admin/providers/meet.dart';
 import 'package:admin/providers/screen.dart';
 import 'package:admin/router.dart';
@@ -6,6 +7,7 @@ import 'package:admin/utils/spacing.dart';
 import 'package:admin/views/lights/info.dart';
 import 'package:admin/views/lights/item.dart';
 import 'package:admin/views/lights/judge_notif.dart';
+import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,6 +18,14 @@ class Lights extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFullScreen = ref.watch(frameLessProvider);
+    final lights = ref.watch(meetProvider).lights;
+
+    Light? side1Light =
+        lights.firstWhereOrNull((light) => light.judgeRole == sideJudge1);
+    Light? side2Light =
+        lights.firstWhereOrNull((light) => light.judgeRole == sideJudge2);
+    Light? headLight =
+        lights.firstWhereOrNull((light) => light.judgeRole == headJudge);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -83,30 +93,36 @@ class Lights extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       LightItem(
-                        isReady: true,
-                        isGoodLift: true,
-                        variation: null,
+                        isReady: side1Light != null,
+                        isGoodLift: side1Light == null
+                            ? null
+                            : side1Light.value == whiteValue,
+                        variation: side1Light?.value,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: defaultSpacing * 2,
                       ),
                       LightItem(
-                        isReady: false,
-                        isGoodLift: null,
-                        variation: null,
+                        isReady: headLight != null,
+                        isGoodLift: headLight == null
+                            ? null
+                            : headLight.value == whiteValue,
+                        variation: headLight?.value,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: defaultSpacing * 2,
                       ),
                       LightItem(
-                        isReady: true,
-                        isGoodLift: false,
-                        variation: blue,
+                        isReady: side2Light != null,
+                        isGoodLift: side2Light == null
+                            ? null
+                            : side2Light.value == whiteValue,
+                        variation: side2Light?.value,
                       ),
                     ],
                   ),
@@ -147,7 +163,9 @@ class Lights extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          ref.read(meetProvider.notifier).resetLight();
+        },
         child: const Icon(Icons.arrow_forward_ios),
       ),
     );

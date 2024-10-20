@@ -1,8 +1,6 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lights/providers/meet.dart';
 import 'package:lights/services/services.dart';
 
 class ServerState {
@@ -14,21 +12,25 @@ class ServerState {
 }
 
 final serverProvider = StateNotifierProvider<ServerNotifier, ServerState>(
-  (ref) => ServerNotifier(),
+  (ref) => ServerNotifier(ref),
 );
 
 class ServerNotifier extends StateNotifier<ServerState> {
-  ServerNotifier()
+  final Ref _ref;
+
+  ServerNotifier(this._ref)
       : super(
           ServerState(),
         );
 
-  void init(String url, BuildContext context) {
+  void init(String url) {
     state = ServerState(
       connection: ServerConnection(
         url,
         (data) {
-          log(data.toString());
+          if (data['type'] == 'resetLight') {
+            _ref.read(meetProvider.notifier).setWaiting(false);
+          }
         },
         () {
           SystemNavigator.pop();

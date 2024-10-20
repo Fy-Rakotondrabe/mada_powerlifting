@@ -1,22 +1,22 @@
 class Light {
-  final String judgeId;
-  final String value;
+  final String judgeRole;
+  final int value;
 
   Light({
-    required this.judgeId,
+    required this.judgeRole,
     required this.value,
   });
 
   factory Light.fromJson(Map<String, dynamic> json) {
     return Light(
-      judgeId: json['judgeId'],
+      judgeRole: json['judgeRole'],
       value: json['value'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'judgeId': judgeId,
+      'judgeRole': judgeRole,
       'value': value,
     };
   }
