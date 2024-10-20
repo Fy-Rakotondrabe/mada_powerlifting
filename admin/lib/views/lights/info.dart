@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:admin/providers/meet.dart';
 import 'package:admin/providers/server.dart';
-import 'package:admin/utils/const.dart';
-import 'package:admin/utils/encrypt_url.dart';
 import 'package:admin/utils/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +46,6 @@ class MeetInfo extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final serverUrl = ref.watch(serverUrlProvider);
     final meetState = ref.watch(meetProvider);
-    final encryptedUrl = encryptUrl(serverUrl, encryptionKey);
 
     return Container(
       padding: const EdgeInsets.all(defaultSpacing),
@@ -69,7 +64,7 @@ class MeetInfo extends ConsumerWidget {
           spacing(double.infinity, defaultSpacing),
           TextButton(
             onPressed: () {
-              _showQrDialog(context, encryptedUrl);
+              _showQrDialog(context, serverUrl);
             },
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,

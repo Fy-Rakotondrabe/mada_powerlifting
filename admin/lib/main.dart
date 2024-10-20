@@ -46,7 +46,7 @@ void main() async {
     type: InternetAddressType.IPv4,
   );
   final hostAddress = interfaces.first.addresses.first.address;
-  final serverUrl = '$hostAddress:${server.port}';
+  final serverUrl = 'http://$hostAddress:${server.port}';
 
   log(serverUrl);
 

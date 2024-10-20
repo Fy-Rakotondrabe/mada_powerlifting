@@ -68,9 +68,16 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       onDetect: (BarcodeCapture capture) {
         /// The row string scanned barcode value
         final String? scannedValue = capture.barcodes.first.rawValue;
-        debugPrint("Barcode scanned: $scannedValue");
 
-        ref.read(serverProvider.notifier).init('http://192.168.8.100:8080');
+        if (scannedValue != null && scannedValue.contains('http')) {
+          ref.read(serverProvider.notifier).init(scannedValue);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Connection Error'),
+            ),
+          );
+        }
 
         showModalBottomSheet(
           context: context,
