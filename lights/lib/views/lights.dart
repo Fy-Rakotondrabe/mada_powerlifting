@@ -99,7 +99,7 @@ class LightScreen extends ConsumerWidget {
                       return const PopScope(
                         child: AlertDialog(
                           title: Text('Sent'),
-                          content: Text('Waiting for next athlete...'),
+                          content: Text('Waiting for the next athlete...'),
                         ),
                       );
                     },
