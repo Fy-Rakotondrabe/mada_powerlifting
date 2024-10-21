@@ -27,6 +27,9 @@ class Lights extends ConsumerWidget {
     Light? headLight =
         lights.firstWhereOrNull((light) => light.judgeRole == headJudge);
 
+    bool isAllLightsReady =
+        side1Light != null && side2Light != null && headLight != null;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SizedBox(
@@ -99,30 +102,30 @@ class Lights extends ConsumerWidget {
                     children: [
                       LightItem(
                         isReady: side1Light != null,
-                        isGoodLift: side1Light == null
-                            ? null
-                            : side1Light.value == whiteValue,
-                        variation: side1Light?.value,
+                        isGoodLift: isAllLightsReady
+                            ? side1Light.value == whiteValue
+                            : null,
+                        variation: isAllLightsReady ? side1Light.value : null,
                       ),
                       const SizedBox(
                         width: defaultSpacing * 2,
                       ),
                       LightItem(
                         isReady: headLight != null,
-                        isGoodLift: headLight == null
-                            ? null
-                            : headLight.value == whiteValue,
-                        variation: headLight?.value,
+                        isGoodLift: isAllLightsReady
+                            ? headLight.value == whiteValue
+                            : null,
+                        variation: isAllLightsReady ? headLight.value : null,
                       ),
                       const SizedBox(
                         width: defaultSpacing * 2,
                       ),
                       LightItem(
                         isReady: side2Light != null,
-                        isGoodLift: side2Light == null
-                            ? null
-                            : side2Light.value == whiteValue,
-                        variation: side2Light?.value,
+                        isGoodLift: isAllLightsReady
+                            ? side2Light.value == whiteValue
+                            : null,
+                        variation: isAllLightsReady ? side2Light.value : null,
                       ),
                     ],
                   ),
