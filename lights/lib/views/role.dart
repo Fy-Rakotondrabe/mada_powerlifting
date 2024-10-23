@@ -15,9 +15,9 @@ class RoleDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     void addJudge(Judge judge) {
-      ref.read(meetProvider.notifier).setJudge(judge);
       ref.read(serverProvider).connection?.addJudge(judge).then((_) {
         ref.read(serverProvider).connection?.getCurrentMeet().then((meet) {
+          ref.read(meetProvider.notifier).setJudge(judge);
           ref.read(meetProvider.notifier).setCurrentMeet(meet);
         }).catchError((_) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -28,6 +28,14 @@ class RoleDialog extends ConsumerWidget {
           );
           GoRouter.of(context).replace(scanRoute);
         });
+      }).catchError((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Text('Judge limit reached'),
+          ),
+        );
+        GoRouter.of(context).replace(scanRoute);
       });
     }
 

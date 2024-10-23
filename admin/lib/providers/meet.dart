@@ -2,6 +2,7 @@ import 'package:admin/db/database_helper.dart';
 import 'package:admin/models/judge.dart';
 import 'package:admin/models/light.dart';
 import 'package:admin/models/meet.dart';
+import 'package:admin/utils/const.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MeetState {
@@ -20,7 +21,11 @@ class MeetState {
     this.currentMeet,
     this.loading = false,
     this.lights = const [],
-    this.judges = const [],
+    this.judges = const [
+      Judge(id: '123', role: headJudge),
+      Judge(id: '234', role: sideJudge1),
+      Judge(id: '345', role: sideJudge2)
+    ],
   });
 
   MeetState copyWith({

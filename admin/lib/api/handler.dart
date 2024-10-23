@@ -66,16 +66,18 @@ class ServerHandler {
             .read(meetProvider)
             .judges
             .firstWhereOrNull((j) => j.role == judge.role);
-        if (container.read(meetProvider).judges.length < 3 && existed == null) {
+
+        if (existed != null ||
+            container.read(meetProvider).judges.length >= 3) {
+          return shelf.Response.unauthorized(
+            jsonEncode({'message': 'Judge limit reached'}),
+            headers: {'Content-Type': 'application/json'},
+          );
+        } else {
           container.read(meetProvider.notifier).addJudge(judge);
           _broadcastStateUpdate();
           return shelf.Response.ok(
             jsonEncode({'message': 'Judge added'}),
-            headers: {'Content-Type': 'application/json'},
-          );
-        } else {
-          return shelf.Response.ok(
-            jsonEncode({'message': 'Judge limit reached'}),
             headers: {'Content-Type': 'application/json'},
           );
         }
