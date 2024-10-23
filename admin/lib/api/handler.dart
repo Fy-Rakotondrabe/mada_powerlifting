@@ -8,6 +8,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:collection/collection.dart';
 
 class ServerHandler {
   final ProviderContainer container;
@@ -58,10 +59,14 @@ class ServerHandler {
     }
     if (request.method == 'POST' && request.url.path == 'judge') {
       try {
-        if (container.read(meetProvider).judges.length < 3) {
-          final requestBody = await request.readAsString();
-          final payload = jsonDecode(requestBody) as Map<String, dynamic>;
-          final judge = Judge.fromJson(payload);
+        final requestBody = await request.readAsString();
+        final payload = jsonDecode(requestBody) as Map<String, dynamic>;
+        final judge = Judge.fromJson(payload);
+        final existed = container
+            .read(meetProvider)
+            .judges
+            .firstWhereOrNull((j) => j.role == judge.role);
+        if (container.read(meetProvider).judges.length < 3 && existed == null) {
           container.read(meetProvider.notifier).addJudge(judge);
           _broadcastStateUpdate();
           return shelf.Response.ok(
