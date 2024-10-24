@@ -34,13 +34,12 @@ jobs:
         run: |
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
 
-      - name: Upload to Google Drive
-        uses: mathieu-bour/setup-rclone@v1
-        with:
-          rclone_config: |
-            [gdrive]
-            type = drive
-            token = ${{ secrets.GOOGLE_DRIVE_TOKEN }}
+      - name: Install rclone
+        uses: rclone/rclone@v1
+
+      - name: Configure rclone
+        run: |
+          rclone config create gdrive drive scope drive.file token "${{ secrets.GOOGLE_DRIVE_TOKEN }}"
 
       - name: Copy to Drive
         run: rclone copy windows-build.zip gdrive:flutter-builds/
@@ -67,13 +66,12 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      - name: Upload to Google Drive
-        uses: mathieu-bour/setup-rclone@v1
-        with:
-          rclone_config: |
-            [gdrive]
-            type = drive
-            token = ${{ secrets.GOOGLE_DRIVE_TOKEN }}
+      - name: Install rclone
+        uses: rclone/rclone@v1
+
+      - name: Configure rclone
+        run: |
+          rclone config create gdrive drive scope drive.file token "${{ secrets.GOOGLE_DRIVE_TOKEN }}"
 
       - name: Copy to Drive
         run: rclone copy build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
