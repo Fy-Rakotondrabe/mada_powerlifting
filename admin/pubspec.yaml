@@ -29,6 +29,7 @@ dev_dependencies:
   build_runner: ^2.4.12
   custom_lint: ^0.6.7
   riverpod_lint: ^2.3.13
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true
@@ -47,3 +48,11 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+flutter_launcher_icons:
+  windows:
+    generate: true
+    image_path: "assets/icon/icon.jpg"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/icon/icon.jpg"
