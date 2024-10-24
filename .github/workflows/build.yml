@@ -17,7 +17,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.19.0"
+          flutter-version: "3.24.3"
           channel: "stable"
           cache: true
 
@@ -51,15 +51,15 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.19.0"
+          flutter-version: "3.24.3"
           channel: "stable"
           cache: true
 
       - name: Get dependencies
-        run: flutter pub get --directory=light
+        run: flutter pub get --directory=lights
 
       - name: Build APK
-        run: flutter build apk --release --directory=light
+        run: flutter build apk --release --directory=lights
 
       - name: Install rclone
         run: |
@@ -70,4 +70,4 @@ jobs:
           rclone config create gdrive drive scope drive.file token "${{ secrets.GOOGLE_DRIVE_TOKEN }}"
 
       - name: Copy to Drive
-        run: rclone copy light/build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
+        run: rclone copy lights/build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
