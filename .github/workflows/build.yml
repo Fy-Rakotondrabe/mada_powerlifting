@@ -41,7 +41,7 @@ jobs:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
       - name: Copy to Drive
-        run: rclone copy windows-build.zip gdrive:flutter-builds/
+        run: rclone copy windows-build.zip remote:flutter-builds/
 
   build-android:
     runs-on: ubuntu-latest
@@ -78,4 +78,4 @@ jobs:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
       - name: Copy to Drive
-        run: rclone copy lights/build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
+        run: rclone copy lights/build/app/outputs/flutter-apk/app-release.apk remote:flutter-builds/
