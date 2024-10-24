@@ -22,12 +22,10 @@ jobs:
           cache: true
 
       - name: Get dependencies
-        run: flutter pub get
-        working-directory: ./admin
+        run: flutter pub get --directory=admin
 
       - name: Build Windows
-        run: flutter build windows --release
-        working-directory: ./admin
+        run: flutter build windows --release --directory=admin
 
       - name: Zip Windows build
         run: |
@@ -58,12 +56,10 @@ jobs:
           cache: true
 
       - name: Get dependencies
-        run: flutter pub get
-        working-directory: ./light
+        run: flutter pub get --directory=light
 
       - name: Build APK
-        run: flutter build apk --release
-        working-directory: ./light
+        run: flutter build apk --release --directory=light
 
       - name: Install rclone
         run: |
