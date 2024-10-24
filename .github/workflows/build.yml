@@ -35,7 +35,8 @@ jobs:
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
 
       - name: Install rclone
-        uses: rclone/rclone@v1
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
 
       - name: Configure rclone
         run: |
@@ -67,7 +68,8 @@ jobs:
         run: flutter build apk --release
 
       - name: Install rclone
-        uses: rclone/rclone@v1
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
 
       - name: Configure rclone
         run: |
