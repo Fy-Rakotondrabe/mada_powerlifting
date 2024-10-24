@@ -43,7 +43,7 @@ jobs:
           disable_base64: true
 
       - name: Copy to Drive
-        run: rclone copy admin.zip remote:mada_powerlifting/
+        run: rclone copy admin.zip remote:mada-powerlifting/
 
   build-android:
     runs-on: ubuntu-latest
@@ -86,4 +86,4 @@ jobs:
           disable_base64: true
 
       - name: Copy to Drive
-        run: rclone copy light.apk remote:mada_powerlifting/
+        run: rclone copy light.apk remote:mada-powerlifting/
