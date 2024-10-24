@@ -33,21 +33,16 @@ jobs:
 
       - name: Zip Windows build
         run: |
-          Compress-Archive -Path admin\build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
+          Compress-Archive -Path admin\build\windows\x64\runner\Release\* -DestinationPath admin.zip
 
       - name: Setup Rclone
         uses: AnimMouse/setup-rclone@v1
         with:
-          rclone_config: |
-            [remote]
-            type = drive
-            scope = drive
-            token = {"access_token":"ya29.a0AeDClZDBIzAcWw1BxtKAjKQFDS1G8g8-kP6t9F_eNF-dCXe5kbK-WdxuRpxFKSOys6DG9BCs7ZXn6A6DVy_8_9nQBUzz8I--d5J6R2R8r7yQ782LBggBL3gx9NJP4jWK6pc9NayxDTwhHnhLG8vvEnLAU2fbZi2oqDJR62zZaCgYKAUcSARASFQHGX2Mi8RoMjeD3zvhSnAlgicabKQ0175","token_type":"Bearer","refresh_token":"1//03hRiwP_xXaJCCgYIARAAGAMSNwF-L9IrDxR4lPoxMNjtwvcTe_cTRB_-xkD7imlqTl0TBbqS7V8dBYvt0vWw-s9ZsVBIek2v15Y","expiry":"2024-10-24T23:06:42.126801+03:00"}
-            team_drive =
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
           disable_base64: true
 
       - name: Copy to Drive
-        run: rclone copy windows-build.zip remote:flutter-builds/
+        run: rclone copy admin.zip remote:mada_powerlifting/
 
   build-android:
     runs-on: ubuntu-latest
@@ -78,16 +73,15 @@ jobs:
           cd lights
           flutter build apk --release
 
+      - name: Rename APK
+        run: |
+          mv lights/build/app/outputs/flutter-apk/app-release.apk light.apk
+
       - name: Setup Rclone
         uses: AnimMouse/setup-rclone@v1
         with:
-          rclone_config: |
-            [remote]
-            type = drive
-            scope = drive
-            token = {"access_token":"ya29.a0AeDClZDBIzAcWw1BxtKAjKQFDS1G8g8-kP6t9F_eNF-dCXe5kbK-WdxuRpxFKSOys6DG9BCs7ZXn6A6DVy_8_9nQBUzz8I--d5J6R2R8r7yQ782LBggBL3gx9NJP4jWK6pc9NayxDTwhHnhLG8vvEnLAU2fbZi2oqDJR62zZaCgYKAUcSARASFQHGX2Mi8RoMjeD3zvhSnAlgicabKQ0175","token_type":"Bearer","refresh_token":"1//03hRiwP_xXaJCCgYIARAAGAMSNwF-L9IrDxR4lPoxMNjtwvcTe_cTRB_-xkD7imlqTl0TBbqS7V8dBYvt0vWw-s9ZsVBIek2v15Y","expiry":"2024-10-24T23:06:42.126801+03:00"}
-            team_drive =
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
           disable_base64: true
 
       - name: Copy to Drive
-        run: rclone copy lights/build/app/outputs/flutter-apk/app-release.apk remote:flutter-builds/
+        run: rclone copy light.apk remote:mada_powerlifting/
