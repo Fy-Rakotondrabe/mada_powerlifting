@@ -22,10 +22,14 @@ jobs:
           cache: true
 
       - name: Get dependencies
-        run: flutter pub get --directory=admin
+        run: |
+          cd admin
+          flutter pub get
 
       - name: Build Windows
-        run: flutter build windows --release --directory=admin
+        run: |
+          cd admin
+          flutter build windows --release
 
       - name: Zip Windows build
         run: |
@@ -56,10 +60,14 @@ jobs:
           cache: true
 
       - name: Get dependencies
-        run: flutter pub get --directory=lights
+        run: |
+          cd lights
+          flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release --directory=lights
+        run: |
+          cd lights
+          flutter build apk --release
 
       - name: Install rclone
         run: |
