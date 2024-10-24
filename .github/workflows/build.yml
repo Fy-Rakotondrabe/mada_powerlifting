@@ -35,13 +35,10 @@ jobs:
         run: |
           Compress-Archive -Path admin\build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
 
-      - name: Install rclone
-        run: |
-          choco install rclone -y
-
-      - name: Configure rclone
-        run: |
-          rclone config create gdrive drive scope drive.file token "${{ secrets.GOOGLE_DRIVE_TOKEN }}"
+      - name: Setup Rclone
+        uses: AnimMouse/setup-rclone@v1
+        with:
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
       - name: Copy to Drive
         run: rclone copy windows-build.zip gdrive:flutter-builds/
@@ -75,13 +72,10 @@ jobs:
           cd lights
           flutter build apk --release
 
-      - name: Install rclone
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
-
-      - name: Configure rclone
-        run: |
-          rclone config create gdrive drive scope drive.file token "${{ secrets.GOOGLE_DRIVE_TOKEN }}"
+      - name: Setup Rclone
+        uses: AnimMouse/setup-rclone@v1
+        with:
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
       - name: Copy to Drive
         run: rclone copy lights/build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
