@@ -10,9 +10,6 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: admin
 
     steps:
       - uses: actions/checkout@v3
@@ -26,13 +23,15 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+        working-directory: ./admin
 
       - name: Build Windows
         run: flutter build windows --release
+        working-directory: ./admin
 
       - name: Zip Windows build
         run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
+          Compress-Archive -Path admin\build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
 
       - name: Install rclone
         run: |
@@ -47,9 +46,6 @@ jobs:
 
   build-android:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: light
 
     steps:
       - uses: actions/checkout@v3
@@ -63,9 +59,11 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+        working-directory: ./light
 
       - name: Build APK
         run: flutter build apk --release
+        working-directory: ./light
 
       - name: Install rclone
         run: |
@@ -76,4 +74,4 @@ jobs:
           rclone config create gdrive drive scope drive.file token "${{ secrets.GOOGLE_DRIVE_TOKEN }}"
 
       - name: Copy to Drive
-        run: rclone copy build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
+        run: rclone copy light/build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
