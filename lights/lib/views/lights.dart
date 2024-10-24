@@ -1,7 +1,7 @@
 import 'dart:developer';
 
+import 'package:vibration/vibration.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lights/model/judge.dart';
 import 'package:lights/model/light.dart';
@@ -126,8 +126,12 @@ class LightScreen extends ConsumerWidget {
       width: width,
       height: height,
       child: InkWell(
-        onLongPress: () {
-          HapticFeedback.heavyImpact();
+        onLongPress: () async {
+          // HapticFeedback.heavyImpact();
+          if ((await Vibration.hasVibrator()) == true) {
+            Vibration.vibrate();
+            log('vibrate');
+          }
           try {
             Judge? judge = ref.watch(meetProvider).judge;
             if (judge != null) {

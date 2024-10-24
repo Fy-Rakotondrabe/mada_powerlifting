@@ -43,7 +43,9 @@ dependencies:
   ai_barcode_scanner: ^5.2.2
   connectivity_plus: ^6.0.5
   app_settings: ^5.1.1
-  flutter_launcher_icons: ^0.14.1
+  vibration: ^2.0.1
+  keep_screen_on: ^3.0.0
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +55,7 @@ dev_dependencies:
   build_runner: ^2.4.12
   custom_lint: ^0.6.7
   riverpod_lint: ^2.3.13
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   # The following line ensures that the Material Icons font is
