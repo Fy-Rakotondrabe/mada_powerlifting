@@ -1,0 +1,79 @@
+name: Flutter Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./admin
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.19.0"
+          channel: "stable"
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Zip Windows build
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath windows-build.zip
+
+      - name: Upload to Google Drive
+        uses: mathieu-bour/setup-rclone@v1
+        with:
+          rclone_config: |
+            [gdrive]
+            type = drive
+            token = ${{ secrets.GOOGLE_DRIVE_TOKEN }}
+
+      - name: Copy to Drive
+        run: rclone copy windows-build.zip gdrive:flutter-builds/
+
+  build-android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./light
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.19.0"
+          channel: "stable"
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload to Google Drive
+        uses: mathieu-bour/setup-rclone@v1
+        with:
+          rclone_config: |
+            [gdrive]
+            type = drive
+            token = ${{ secrets.GOOGLE_DRIVE_TOKEN }}
+
+      - name: Copy to Drive
+        run: rclone copy build/app/outputs/flutter-apk/app-release.apk gdrive:flutter-builds/
