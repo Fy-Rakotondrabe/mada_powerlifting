@@ -17,8 +17,8 @@ void main() async {
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = const WindowOptions(
-    size: Size(1400, 800),
-    minimumSize: Size(1000, 500),
+    size: Size(800, 500),
+    minimumSize: Size(500, 250),
     center: true,
     backgroundColor: Colors.transparent,
     skipTaskbar: false,
@@ -91,6 +91,9 @@ class _AdminState extends ConsumerState<Admin> {
     if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.escape) {
       ref.read(frameLessProvider.notifier).setFrameLess(false);
+    }
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.keyF) {
+      ref.read(frameLessProvider.notifier).setFrameLess(true);
     }
     return false;
   }
